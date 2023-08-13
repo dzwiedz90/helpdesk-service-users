@@ -1,0 +1,14 @@
+create_table("users") {
+  t.Column("id", "integer", {primary: true})
+  t.Column("username", "string", {"default": ""})
+  t.Column("password", "string", {"default": ""})
+  t.Column("email", "string", {"default": ""})
+  t.Column("first_name", "string", {"default": ""})
+  t.Column("last_name", "string", {"default": ""})
+  t.Column("age", "integer")
+  t.Column("gender", "string", {"default": ""})
+  t.Column("street", "string", {"default": ""})
+  t.Column("city", "string", {"default": ""})
+  t.Column("postal_code", "string", {"default": ""})
+  t.Column("country", "string", {"default": ""})
+}

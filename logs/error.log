@@ -1,0 +1,4 @@
+2023/08/12 19:25:47 Failed to insert user into DB: ERROR: syntax error at or near "," (SQLSTATE 42601)
+2023/08/12 19:36:07 Failed to insert user into DB: ERROR: syntax error at or near "," (SQLSTATE 42601)
+2023/08/12 19:41:09 Failed to insert user into DB: ERROR: syntax error at or near "," (SQLSTATE 42601)
+2023/08/12 19:42:46 Failed to insert user into DB: ERROR: invalid input syntax for type integer: "James" (SQLSTATE 22P02)
