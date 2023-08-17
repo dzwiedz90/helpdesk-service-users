@@ -2,3 +2,12 @@
 2023/08/12 19:36:07 Failed to insert user into DB: ERROR: syntax error at or near "," (SQLSTATE 42601)
 2023/08/12 19:41:09 Failed to insert user into DB: ERROR: syntax error at or near "," (SQLSTATE 42601)
 2023/08/12 19:42:46 Failed to insert user into DB: ERROR: invalid input syntax for type integer: "James" (SQLSTATE 22P02)
+2023/08/17 20:06:47 Failed to validate request: validation error, failed to get postal code from the request
+2023/08/17 20:07:37 Failed to validate request: validation error, failed to get postal code from the request
+2023/08/17 20:08:50 Failed to validate request: validation error, failed to get first name from the request
+2023/08/17 20:28:03 Failed to validate request: validation error, failed to get first name from the request
+2023/08/17 20:28:17 Failed to validate request: validation error, failed to get username from the request
+2023/08/17 20:28:54 Failed to validate request: validation error, failed to get username from the request
+2023/08/17 20:29:37 Failed to validate request: validation error, failed to get username from the request
+2023/08/17 20:37:38 Failed to validate request: validation error, failed to get username from the request
+2023/08/17 23:58:29 Failed to validate request: validation error, failed to get username from the request

@@ -5,25 +5,28 @@ import (
 	"fmt"
 
 	pb "github.com/dzwiedz90/helpdesk-proto/services/users"
-	"github.com/dzwiedz90/helpdesk-service-users/driver"
-	"github.com/dzwiedz90/helpdesk-service-users/logs"
 	"github.com/dzwiedz90/helpdesk-service-users/pkg/core"
+	"github.com/dzwiedz90/helpdesk-service-users/service/serviceconfig"
 )
 
 type Server struct {
 	pb.UsersServiceServer
-	ServerConfig *ServerConfig
-}
-
-type ServerConfig struct {
-	DB *driver.DB
+	ServerConfig *serviceconfig.ServerConfig
+	Core         core.CoreAdapter
 }
 
 func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
-	creq := s.parseStructFromRequest(req)
-	id, err := core.CreateUser(ctx, s.ServerConfig.DB, creq)
+	err := ValidateRequest(req)
 	if err != nil {
-		logs.ErrorLogger(fmt.Sprintf("Failed to create user within core: %v", err))
+		s.ServerConfig.Logger.ErrorLogger(fmt.Sprintf("Failed to validate request: %v", err))
+		return nil, err
+	}
+
+	creq := s.parseStructFromRequest(req)
+
+	id, err := s.Core.CreateUser(ctx, s.ServerConfig, creq)
+	if err != nil {
+		s.ServerConfig.Logger.ErrorLogger(fmt.Sprintf("Failed to create user within core: %v", err))
 		return nil, err
 	}
 
@@ -33,9 +36,9 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
 }
 
 func (s *Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUserResponse, error) {
-	user, err := core.GetUser(ctx, s.ServerConfig.DB, req.GetId())
+	user, err := s.Core.GetUser(ctx, s.ServerConfig, req.GetId())
 	if err != nil {
-		logs.ErrorLogger(fmt.Sprintf("Failed to get user from core: %v", err))
+		s.ServerConfig.Logger.ErrorLogger(fmt.Sprintf("Failed to get user from core: %v", err))
 		return nil, err
 	}
 
@@ -45,7 +48,15 @@ func (s *Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUs
 }
 
 func (s *Server) GetAllUsers(ctx context.Context, in *pb.GetAllUsersRequest) (*pb.GetAllUsersResponse, error) {
-	return nil, nil
+	users, err := s.Core.GetAlUsers(ctx, s.ServerConfig)
+	if err != nil {
+		s.ServerConfig.Logger.ErrorLogger(fmt.Sprintf("Failed to get all users from core: %v", err))
+		return nil, err
+	}
+
+	return &pb.GetAllUsersResponse{
+		Users: s.parseStructFromGetAllResponse(users),
+	}, nil
 }
 
 func (s *Server) UpdateUser(ctx context.Context, in *pb.UpdateUserRequest) (*pb.UpdateUserResponse, error) {

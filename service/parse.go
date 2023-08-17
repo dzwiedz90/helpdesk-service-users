@@ -8,20 +8,24 @@ import (
 
 func (s *Server) parseStructFromRequest(req *pb.CreateUserRequest) *model.CreateUser {
 	u := req.GetUser()
-	return &model.CreateUser{
-		Username:  u.GetUsername(),
-		Password:  u.GetPassword(),
-		Email:     u.GetEmail(),
-		FirstName: u.GetFirstName(),
-		LastName:  u.GetLastName(),
-		Age:       u.GetAge(),
-		Gender:    u.GetGender(),
-		Address: &model.Address{
-			Street:     u.Address.GetStreet(),
-			City:       u.Address.GetCity(),
-			PostalCode: u.Address.GetPostalCode(),
-			Country:    u.Address.GetCountry(),
-		},
+	if u != nil {
+		return &model.CreateUser{
+			Username:  u.GetUsername(),
+			Password:  u.GetPassword(),
+			Email:     u.GetEmail(),
+			FirstName: u.GetFirstName(),
+			LastName:  u.GetLastName(),
+			Age:       u.GetAge(),
+			Gender:    u.GetGender(),
+			Address: &model.Address{
+				Street:     u.Address.GetStreet(),
+				City:       u.Address.GetCity(),
+				PostalCode: u.Address.GetPostalCode(),
+				Country:    u.Address.GetCountry(),
+			},
+		}
+	} else {
+		return nil
 	}
 }
 
@@ -60,4 +64,26 @@ func (s *Server) parseStructFromGetResponse(u *model.User) *pb.User {
 			Country:    u.GetAddress().Country,
 		},
 	}
+}
+
+func (s *Server) parseStructFromGetAllResponse(u []*model.User) []*pb.User {
+	var users []*pb.User
+	for _, u := range u {
+		users = append(users, &pb.User{
+			UserId:    u.GetId(),
+			Username:  u.GetUsername(),
+			Email:     u.GetEmail(),
+			FirstName: u.GetFirstName(),
+			LastName:  u.GetLastName(),
+			Age:       u.GetAge(),
+			Gender:    u.GetGender(),
+			Address: &pbloc.Address{
+				Street:     u.GetAddress().Street,
+				City:       u.GetAddress().City,
+				PostalCode: u.GetAddress().PostalCode,
+				Country:    u.GetAddress().Country,
+			},
+		})
+	}
+	return users
 }

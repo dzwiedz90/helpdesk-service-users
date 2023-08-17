@@ -6,15 +6,15 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/dzwiedz90/helpdesk-service-users/logs"
 	"github.com/dzwiedz90/helpdesk-service-users/model"
+	"github.com/dzwiedz90/helpdesk-service-users/service/serviceconfig"
 )
 
-func InsertUser(ctx context.Context, tx *sql.Tx, creq *model.CreateUser) (int64, error) {
+func InsertUser(ctx context.Context, tx *sql.Tx, creq *model.CreateUser, cfg *serviceconfig.ServerConfig) (int64, error) {
 	query := "INSERT INTO users (username, password, email, first_name, last_name, age, gender, street, city, postal_code, country, created_at, updated_at) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)"
 	_, err := tx.ExecContext(ctx, query, creq.Username, creq.Password, creq.Email, creq.FirstName, creq.LastName, creq.Age, creq.Gender, creq.Address.Street, creq.Address.City, creq.Address.PostalCode, creq.Address.Country, time.Now(), time.Now())
 	if err != nil {
-		logs.ErrorLogger(fmt.Sprintf("Failed to insert user into DB: %v", err))
+		cfg.Logger.ErrorLogger(fmt.Sprintf("Failed to insert user into DB: %v", err))
 		return 0, err
 	}
 
@@ -26,24 +26,23 @@ func InsertUser(ctx context.Context, tx *sql.Tx, creq *model.CreateUser) (int64,
 	err = row.Scan(&id)
 	if err != nil {
 		message := fmt.Sprintf("Failed getting user id from database: %v", err)
-		logs.ErrorLogger(message)
+		cfg.Logger.ErrorLogger(message)
 		return 0, err
 	}
 
 	return id, nil
 }
 
-func GetUser(ctx context.Context, tx *sql.Tx, id int64) (*model.User, error) {
+func GetUser(ctx context.Context, tx *sql.Tx, id int64, cfg *serviceconfig.ServerConfig) (*model.User, error) {
 	var user model.User
 	var address model.Address
 
-	query := "SELECT id, username, password, email, first_name, last_name, age, gender, street, city, postal_code, country FROM users WHERE id=$1"
+	query := "SELECT id, username, email, first_name, last_name, age, gender, street, city, postal_code, country FROM users WHERE id=$1"
 
 	row := tx.QueryRowContext(ctx, query, id)
 	err := row.Scan(
 		&user.UserId,
 		&user.Username,
-		&user.Password,
 		&user.Email,
 		&user.FirstName,
 		&user.LastName,
@@ -57,9 +56,60 @@ func GetUser(ctx context.Context, tx *sql.Tx, id int64) (*model.User, error) {
 	user.Address = address
 
 	if err != nil {
-		logs.ErrorLogger(fmt.Sprintf("Failed to get user from the database: %v", err))
+		cfg.Logger.ErrorLogger(fmt.Sprintf("Failed to get user from the database: %v", err))
 		return nil, err
 	}
 
 	return &user, nil
+}
+
+func GetAllUsers(ctx context.Context, tx *sql.Tx, cfg *serviceconfig.ServerConfig) ([]*model.User, error) {
+	var users []*model.User
+
+	query := "SELECT id, username, email, first_name, last_name, age, gender, street, city, postal_code, country FROM users"
+
+	rows, err := tx.QueryContext(ctx, query)
+	if err != nil {
+		return users, nil
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var user model.User
+		var address model.Address
+		user.Address = address
+		err := rows.Scan(
+			&user.UserId,
+			&user.Username,
+			&user.Email,
+			&user.FirstName,
+			&user.LastName,
+			&user.Age,
+			&user.Gender,
+			&user.Address.Street,
+			&user.Address.City,
+			&user.Address.PostalCode,
+			&user.Address.Country,
+		)
+
+		if err != nil {
+			return users, err
+		}
+
+		users = append(users, &user)
+	}
+
+	if err = rows.Err(); err != nil {
+		return users, err
+	}
+
+	return users, nil
+}
+
+func UpdateUser(ctx context.Context, tx *sql.Tx, creq *model.UpdateUser, cfg *serviceconfig.ServerConfig) error {
+	return nil
+}
+
+func DeleteUser(ctx context.Context, tx *sql.Tx, id int, cfg *serviceconfig.ServerConfig) error {
+	return nil
 }

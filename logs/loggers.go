@@ -9,16 +9,19 @@ import (
 
 var cfg *config.Config
 
-func NewLoggers(a *config.Config) {
+type Logger struct{}
+
+func NewLoggers(a *config.Config) Logger {
 	cfg = a
+	return Logger{}
 }
 
-func InfoLogger(message string) {
+func (l *Logger) InfoLogger(message string) {
 	cfg.InfoLog.Println(message)
 	logInfoToFile(message)
 }
 
-func ErrorLogger(message string) {
+func (l *Logger) ErrorLogger(message string) {
 	cfg.ErrorLog.Println(message)
 	logErrorToFile(message)
 }

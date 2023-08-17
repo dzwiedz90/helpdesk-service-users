@@ -1,6 +1,8 @@
 package config
 
-import "log"
+import (
+	"log"
+)
 
 type Config struct {
 	GRPCADDRESS string
