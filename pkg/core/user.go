@@ -131,7 +131,7 @@ func (c *Core) UpdateUser(ctx context.Context, cfg *serviceconfig.ServerConfig, 
 	return nil
 }
 
-func (c *Core) DeleteUser(ctx context.Context, cfg *serviceconfig.ServerConfig, id int) error {
+func (c *Core) DeleteUser(ctx context.Context, cfg *serviceconfig.ServerConfig, id int64) error {
 	tx, err := cfg.DB.SQL.BeginTx(ctx, defaultTransactionOptions)
 	if err != nil {
 		cfg.Logger.ErrorLogger(fmt.Sprintf("Failed to start transaction: %v", err))

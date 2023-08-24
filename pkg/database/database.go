@@ -107,9 +107,43 @@ func GetAllUsers(ctx context.Context, tx *sql.Tx, cfg *serviceconfig.ServerConfi
 }
 
 func UpdateUser(ctx context.Context, tx *sql.Tx, creq *model.UpdateUser, cfg *serviceconfig.ServerConfig) error {
+	query := `UPDATE users SET email=$1, first_name=$2, last_name=$3, age=$4, gender=$5, street=$6, city=$7, postal_code=&8, country=$9, updated_at=$10 WHERE id=$11`
+
+	_, err := tx.ExecContext(
+		ctx,
+		query,
+		creq.Email,
+		creq.FirstName,
+		creq.LastName,
+		creq.Age,
+		creq.Gender,
+		creq.Address.Street,
+		creq.Address.City,
+		creq.Address.PostalCode,
+		creq.Address.Country,
+		time.Now(),
+		creq.UserId,
+	)
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
-func DeleteUser(ctx context.Context, tx *sql.Tx, id int, cfg *serviceconfig.ServerConfig) error {
+func DeleteUser(ctx context.Context, tx *sql.Tx, id int64, cfg *serviceconfig.ServerConfig) error {
+	query := `DELETE FROM users WHERE id=$1`
+
+	_, err := tx.ExecContext(
+		ctx,
+		query,
+		id,
+	)
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

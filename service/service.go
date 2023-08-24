@@ -22,7 +22,7 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
 		return nil, err
 	}
 
-	creq := s.parseStructFromRequest(req)
+	creq := s.parseStructFromCreateRequest(req)
 
 	id, err := s.Core.CreateUser(ctx, s.ServerConfig, creq)
 	if err != nil {
@@ -47,7 +47,7 @@ func (s *Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUs
 	}, nil
 }
 
-func (s *Server) GetAllUsers(ctx context.Context, in *pb.GetAllUsersRequest) (*pb.GetAllUsersResponse, error) {
+func (s *Server) GetAllUsers(ctx context.Context, req *pb.GetAllUsersRequest) (*pb.GetAllUsersResponse, error) {
 	users, err := s.Core.GetAlUsers(ctx, s.ServerConfig)
 	if err != nil {
 		s.ServerConfig.Logger.ErrorLogger(fmt.Sprintf("Failed to get all users from core: %v", err))
@@ -59,10 +59,30 @@ func (s *Server) GetAllUsers(ctx context.Context, in *pb.GetAllUsersRequest) (*p
 	}, nil
 }
 
-func (s *Server) UpdateUser(ctx context.Context, in *pb.UpdateUserRequest) (*pb.UpdateUserResponse, error) {
+func (s *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.UpdateUserResponse, error) {
+	err := ValidateRequest(req)
+	if err != nil {
+		s.ServerConfig.Logger.ErrorLogger(fmt.Sprintf("Failed to validate request: %v", err))
+		return nil, err
+	}
+
+	creq := s.parseStructFromUpdateRequest(req)
+
+	err = s.Core.UpdateUser(ctx, s.ServerConfig, creq)
+	if err != nil {
+		s.ServerConfig.Logger.ErrorLogger(fmt.Sprintf("Failed to update user: %v", err))
+		return nil, err
+	}
+
 	return nil, nil
 }
 
-func (s *Server) DeleteUser(ctx context.Context, in *pb.DeleteUserRequest) (*pb.DeleteUserResponse, error) {
+func (s *Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb.DeleteUserResponse, error) {
+	err := s.Core.DeleteUser(ctx, s.ServerConfig, req.GetId())
+	if err != nil {
+		s.ServerConfig.Logger.ErrorLogger(fmt.Sprintf("Failed to delete user: %v", err))
+		return nil, err
+	}
+
 	return nil, nil
 }

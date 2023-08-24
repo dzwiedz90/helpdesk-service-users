@@ -6,7 +6,7 @@ import (
 	"github.com/dzwiedz90/helpdesk-service-users/model"
 )
 
-func (s *Server) parseStructFromRequest(req *pb.CreateUserRequest) *model.CreateUser {
+func (s *Server) parseStructFromCreateRequest(req *pb.CreateUserRequest) *model.CreateUser {
 	u := req.GetUser()
 	if u != nil {
 		return &model.CreateUser{
@@ -34,7 +34,6 @@ func (s *Server) parseStructFromUpdateRequest(req *pb.UpdateUserRequest) *model.
 	return &model.UpdateUser{
 		UserId:    u.GetUserId(),
 		Username:  u.GetUsername(),
-		Password:  u.GetPassword(),
 		Email:     u.GetEmail(),
 		FirstName: u.GetFirstName(),
 		LastName:  u.GetLastName(),
@@ -51,6 +50,7 @@ func (s *Server) parseStructFromUpdateRequest(req *pb.UpdateUserRequest) *model.
 
 func (s *Server) parseStructFromGetResponse(u *model.User) *pb.User {
 	return &pb.User{
+		UserId:    u.GetId(),
 		Username:  u.GetUsername(),
 		Email:     u.GetEmail(),
 		FirstName: u.GetFirstName(),

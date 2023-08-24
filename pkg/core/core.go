@@ -12,5 +12,5 @@ type CoreAdapter interface {
 	GetUser(ctx context.Context, cfg *serviceconfig.ServerConfig, id int64) (*model.User, error)
 	GetAlUsers(ctx context.Context, cfg *serviceconfig.ServerConfig) ([]*model.User, error)
 	UpdateUser(ctx context.Context, cfg *serviceconfig.ServerConfig, creq *model.UpdateUser) error
-	DeleteUser(ctx context.Context, cfg *serviceconfig.ServerConfig, id int) error
+	DeleteUser(ctx context.Context, cfg *serviceconfig.ServerConfig, id int64) error
 }
