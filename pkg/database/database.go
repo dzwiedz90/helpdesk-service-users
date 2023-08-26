@@ -107,7 +107,7 @@ func GetAllUsers(ctx context.Context, tx *sql.Tx, cfg *serviceconfig.ServerConfi
 }
 
 func UpdateUser(ctx context.Context, tx *sql.Tx, creq *model.UpdateUser, cfg *serviceconfig.ServerConfig) error {
-	query := `UPDATE users SET email=$1, first_name=$2, last_name=$3, age=$4, gender=$5, street=$6, city=$7, postal_code=&8, country=$9, updated_at=$10 WHERE id=$11`
+	query := `UPDATE users SET email=$1, first_name=$2, last_name=$3, age=$4, gender=$5, street=$6, city=$7, postal_code=$8, country=$9, updated_at=$10 WHERE id=$11`
 
 	_, err := tx.ExecContext(
 		ctx,

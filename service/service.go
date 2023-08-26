@@ -74,7 +74,7 @@ func (s *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb
 		return nil, err
 	}
 
-	return nil, nil
+	return &pb.UpdateUserResponse{}, nil
 }
 
 func (s *Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb.DeleteUserResponse, error) {
@@ -84,5 +84,5 @@ func (s *Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb
 		return nil, err
 	}
 
-	return nil, nil
+	return &pb.DeleteUserResponse{}, nil
 }
